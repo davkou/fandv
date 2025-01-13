@@ -3,17 +3,22 @@
 namespace App\Tests\App\Service;
 
 use App\Service\StorageService;
+use App\Storage\InMemoryStorageAdapter;
 use PHPUnit\Framework\TestCase;
 
 class StorageServiceTest extends TestCase
 {
     public function testReceivingRequest(): void
     {
-        $request = file_get_contents('request.json');
+	    // Arrange
+	    $request = file_get_contents('request.json');
+	    $adapter = new InMemoryStorageAdapter(); // Crée un adaptateur
 
-        $storageService = new StorageService($request);
+	    // Act
+	    $storageService = new StorageService($request, $adapter); // Passe l'adaptateur au constructeur
 
-        $this->assertNotEmpty($storageService->getRequest());
-        $this->assertIsString($storageService->getRequest());
+	    // Assert
+	    $this->assertNotEmpty($storageService->getRequest());
+	    $this->assertIsString($storageService->getRequest());
     }
 }
