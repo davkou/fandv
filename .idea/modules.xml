@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/fandv.iml" filepath="$PROJECT_DIR$/.idea/fandv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../hometest/fruits-and-vegetables-main/.idea/fruits-and-vegetables-main.iml" filepath="$PROJECT_DIR$/../hometest/fruits-and-vegetables-main/.idea/fruits-and-vegetables-main.iml" />
+    </modules>
+  </component>
+</project>
