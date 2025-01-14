@@ -2,11 +2,11 @@
     {
         "id": 0,
         "name": "Tomato",
-        "grams": 50
+        "grams": 200
     },
     {
         "id": 1,
-        "name": "Potatoes",
-        "grams": 1000
+        "name": "Carrot",
+        "grams": 150
     }
 ]

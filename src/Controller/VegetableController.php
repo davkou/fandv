@@ -17,8 +17,8 @@ use OpenApi\Annotations as OA;
  */
 class VegetableController extends BaseApiController
 {
+    #[Route('/api/vegetables', methods: ['GET'])]
     /**
-     * @Route("/api/vegetables", methods={"GET"})
      *
      * @OA\Get(
      *     path="/api/vegetables",
@@ -74,8 +74,8 @@ class VegetableController extends BaseApiController
         return $this->getDataWithFilters('vegetables', $request);
     }
 
+    #[Route('/api/vegetables/{id}', name: 'get_vegetable', methods: ['GET'])]
     /**
-     * @Route("/api/vegetables/{id}", name="get_vegetable", methods={"GET"})
      *
      * @OA\Get(
      *     path="/api/vegetables/{id}",
@@ -121,8 +121,8 @@ class VegetableController extends BaseApiController
         return $this->getById('vegetables', $id, $request);
     }
 
+    #[Route('/api/vegetables', methods: ['POST'])]
     /**
-     * @Route("/api/vegetables", methods={"POST"})
      *
      * @OA\Post(
      *     path="/api/vegetables",

@@ -10,8 +10,8 @@ class FileStorageAdapter implements StorageAdapterInterface
     private string $basePath;
 
     public function __construct(
-        string $basePath = '/data/storage',
-        private SearchInterface $search
+        private SearchInterface $search,
+        string $basePath = '/data/storage'
     ) {
         $this->basePath = $basePath;
         $this->ensureBasePathExists();
