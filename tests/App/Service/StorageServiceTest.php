@@ -10,15 +10,15 @@ class StorageServiceTest extends TestCase
 {
     public function testReceivingRequest(): void
     {
-	    // Arrange
-	    $request = file_get_contents('request.json');
-	    $adapter = new InMemoryStorageAdapter(); // Crée un adaptateur
+        // Arrange
+        $request = file_get_contents('request.json');
+        $adapter = new InMemoryStorageAdapter(); // Crée un adaptateur
 
-	    // Act
-	    $storageService = new StorageService($request, $adapter); // Passe l'adaptateur au constructeur
+        // Act
+        $storageService = new StorageService($adapter, $request); // Passe l'adaptateur au constructeur
 
-	    // Assert
-	    $this->assertNotEmpty($storageService->getRequest());
-	    $this->assertIsString($storageService->getRequest());
+        // Assert
+        $this->assertNotEmpty($storageService->getRequest());
+        $this->assertIsString($storageService->getRequest());
     }
 }
