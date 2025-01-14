@@ -1,3 +1,9 @@
+# A new API doc access
+![image](https://github.com/user-attachments/assets/5140b896-d716-4e2b-9a4b-1b356a52ccd0)
+
+# Some more tests added 
+![image](https://github.com/user-attachments/assets/b1e43fba-e241-4fe3-96f1-f440f9d3d2c7)
+
 # 🍎🥕 Fruits and Vegetables
 
 ## 🎯 Goal
