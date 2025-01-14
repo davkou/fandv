@@ -22,30 +22,30 @@ class FruitController extends BaseApiController
      *
      * @OA\Get(
      *     path="/api/fruits",
-     *     summary="Liste tous les fruits",
+     *     summary="List all fruits",
      *     @OA\Response(
      *         response=200,
-     *         description="Retourne la liste des fruits",
+     *         description="Returns fruits list",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Fruit"))
      *     ),
      *     @OA\Parameter(
      *         name="name",
      *         in="query",
-     *         description="Filtrer par nom de fruit (partiel autorisé)",
+     *         description="Filter by fruit's name (partial search also)",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="grams",
      *         in="query",
-     *         description="Filtrer par poids exact en grammes",
+     *         description="Filter by weight in grams",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *         name="unit",
      *         in="query",
-     *         description="Unité de poids à retourner (grams ou kilograms)",
+     *         description="Units (grams or kilograms)",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -56,14 +56,14 @@ class FruitController extends BaseApiController
      *     @OA\Parameter(
      *         name="min_grams",
      *         in="query",
-     *         description="Filtrer par poids minimum en grammes",
+     *         description="Filter by weight min in grams",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *         name="max_grams",
      *         in="query",
-     *         description="Filtrer par poids maximum en grammes",
+     *         description="Filter by weight max in grams",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     )
@@ -91,7 +91,7 @@ class FruitController extends BaseApiController
      *     @OA\Parameter(
      *         name="unit",
      *         in="query",
-     *         description="Unité de poids à retourner (grams ou kilograms)",
+     *         description="Units (grams or kilograms)",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -126,14 +126,14 @@ class FruitController extends BaseApiController
      *
      * @OA\Post(
      *     path="/api/fruits",
-     *     summary="Ajoute un fruit",
+     *     summary="Add a fruit",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/Fruit")
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Fruit ajouté avec succès"
+     *         description="Fruit added successfully"
      *     )
      * )
      */
@@ -144,7 +144,6 @@ class FruitController extends BaseApiController
             return $fruit; // Return validation errors if present
         }
 
-        // Save the fruit in the database
         $data = json_decode($request->getContent(), true);
         $this->storageService->saveData($data, 'fruits');
 

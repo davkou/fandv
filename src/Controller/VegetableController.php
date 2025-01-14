@@ -22,30 +22,30 @@ class VegetableController extends BaseApiController
      *
      * @OA\Get(
      *     path="/api/vegetables",
-     *     summary="Liste tous les légumes",
+     *     summary="List all vegetables",
      *     @OA\Response(
      *         response=200,
-     *         description="Retourne la liste des légumes",
+     *         description="Returns vegetables list",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Vegetable"))
      *     ),
      *     @OA\Parameter(
      *         name="name",
      *         in="query",
-     *         description="Filtrer par nom de légume (partiel autorisé)",
+     *         description="Filter by vegetable's name (partial search also)",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="grams",
      *         in="query",
-     *         description="Filtrer par poids exact en grammes",
+     *         description="Filter by weight in grams",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *         name="unit",
      *         in="query",
-     *         description="Unité de poids à retourner (grams ou kilograms)",
+     *         description="Units (grams or kilograms)",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -56,14 +56,14 @@ class VegetableController extends BaseApiController
      *     @OA\Parameter(
      *         name="min_grams",
      *         in="query",
-     *         description="Filtrer par poids minimum en grammes",
+     *         description="Filter by weight min in grams",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *         name="max_grams",
      *         in="query",
-     *         description="Filtrer par poids maximum en grammes",
+     *         description="Filter by weight max in grams",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     )
@@ -91,7 +91,7 @@ class VegetableController extends BaseApiController
      *     @OA\Parameter(
      *         name="unit",
      *         in="query",
-     *         description="Unité de poids à retourner (grams ou kilograms)",
+     *         description="Units (grams or kilograms)",
      *         required=false,
      *         @OA\Schema(
      *             type="string",
@@ -126,7 +126,7 @@ class VegetableController extends BaseApiController
      *
      * @OA\Post(
      *     path="/api/vegetables",
-     *     summary="Ajoute un légume",
+     *     summary="Add a vegetable",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/Vegetable")
@@ -144,7 +144,6 @@ class VegetableController extends BaseApiController
             return $vegetable; // Return validation errors if present
         }
 
-	    // Save the fruit in the database
         $data = json_decode($request->getContent(), true);
         $this->storageService->saveData($data, 'vegetables');
 
