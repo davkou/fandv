@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use App\Service\StorageService;
+use App\Controller\Base\BaseApiController;
+use App\Entity\Vegetable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use OpenApi\Annotations as OA;
 
 /**
@@ -15,15 +15,8 @@ use OpenApi\Annotations as OA;
  *     description="Endpoints related to vegetables"
  * )
  */
-class VegetableController extends AbstractController
+class VegetableController extends BaseApiController
 {
-    private StorageService $storageService;
-
-    public function __construct(StorageService $storageService)
-    {
-        $this->storageService = $storageService;
-    }
-
     /**
      * @Route("/api/vegetables", methods={"GET"})
      *
@@ -38,14 +31,39 @@ class VegetableController extends AbstractController
      *     @OA\Parameter(
      *         name="name",
      *         in="query",
-     *         description="Filtrer par nom de légume",
+     *         description="Filtrer par nom de légume (partiel autorisé)",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="grams",
      *         in="query",
-     *         description="Filtrer par poids en grammes",
+     *         description="Filtrer par poids exact en grammes",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="unit",
+     *         in="query",
+     *         description="Unité de poids à retourner (grams ou kilograms)",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"grams", "kilograms"},
+     *             default="grams"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="min_grams",
+     *         in="query",
+     *         description="Filtrer par poids minimum en grammes",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="max_grams",
+     *         in="query",
+     *         description="Filtrer par poids maximum en grammes",
      *         required=false,
      *         @OA\Schema(type="integer")
      *     )
@@ -53,20 +71,14 @@ class VegetableController extends AbstractController
      */
     public function getVegetables(Request $request): JsonResponse
     {
-        // Récupérer les filtres depuis la requête
-        $filters = $request->query->all();
-
-        // Appliquer les filtres et récupérer les légumes
-        $vegetables = $this->storageService->getAllData('vegetables', $filters);
-
-        return new JsonResponse($vegetables);
+        return $this->getDataWithFilters('vegetables', $request);
     }
 
     /**
-     * @Route("/api/vegetables/{id}", name="get_vegetables", methods={"GET"})
+     * @Route("/api/vegetables/{id}", name="get_vegetable", methods={"GET"})
      *
      * @OA\Get(
-     *     path="/vegetables/{id}",
+     *     path="/api/vegetables/{id}",
      *     summary="Retrieve a fruit by its ID",
      *     tags={"Vegetables"},
      *     @OA\Parameter(
@@ -74,16 +86,28 @@ class VegetableController extends AbstractController
      *         in="path",
      *         required=true,
      *         description="ID of the vegetable",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="unit",
+     *         in="query",
+     *         description="Unité de poids à retourner (grams ou kilograms)",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"grams", "kilograms"},
+     *             default="grams"
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Details of a vegetable",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="id", type="string"),
+     *             @OA\Property(property="id", type="integer"),
      *             @OA\Property(property="name", type="string"),
-     *             @OA\Property(property="color", type="string")
+     *             @OA\Property(property="color", type="string"),
+     *             @OA\Property(property="grams", type="integer")
      *         )
      *     ),
      *     @OA\Response(
@@ -92,10 +116,9 @@ class VegetableController extends AbstractController
      *     )
      * )
      */
-    public function get(string $id): JsonResponse
+    public function get(string $id, Request $request): JsonResponse
     {
-        $fruit = $this->storageService->findData($id, 'vegetables');
-        return $fruit ? new JsonResponse($fruit) : new JsonResponse(['error' => 'Vegetable not found'], 404);
+        return $this->getById('vegetables', $id, $request);
     }
 
     /**
@@ -116,10 +139,13 @@ class VegetableController extends AbstractController
      */
     public function addVegetable(Request $request): JsonResponse
     {
-        // Récupérer les données envoyées dans la requête
-        $data = json_decode($request->getContent(), true);
+        $vegetable = $this->deserializeAndValidate($request, Vegetable::class);
+        if ($vegetable instanceof JsonResponse) {
+            return $vegetable; // Return validation errors if present
+        }
 
-        // Ajouter un légume
+	    // Save the fruit in the database
+        $data = json_decode($request->getContent(), true);
         $this->storageService->saveData($data, 'vegetables');
 
         return new JsonResponse(['status' => 'Vegetable added successfully'], 201);

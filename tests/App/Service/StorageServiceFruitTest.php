@@ -2,58 +2,95 @@
 
 namespace App\Tests\App\Service;
 
+use App\Service\Search\SearchAdapter;
 use App\Service\StorageService;
 use App\Storage\InMemoryStorageAdapter;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
 
 class StorageServiceFruitTest extends TestCase
 {
+    private StorageService $storageService;
+    private InMemoryStorageAdapter $adapter;
+
+    protected function setUp(): void
+    {
+        $this->adapter = new InMemoryStorageAdapter(new SearchAdapter());
+        $this->storageService = new StorageService($this->adapter);
+    }
+
     public function testSaveAndRetrieveSingleFruit(): void
     {
-        // Arrange
-        $request = '{"type": "fruit", "id": "1", "name": "Apple", "grams": 150}';
-        $adapter = new InMemoryStorageAdapter();
-        $storageService = new StorageService($adapter, $request);
-        $fruitData = json_decode($request, true);
+        $fruitData = [
+            'id' => 1,
+            'name' => 'Apple',
+            'grams' => 150,
+        ];
 
-        // Act
-        $storageService->saveData($fruitData, 'fruit');
-        $retrievedFruit = $storageService->findData('1', 'fruit');
+        $this->storageService->saveData($fruitData, 'fruits');
+        $retrievedFruit = $this->storageService->findData(1, 'fruits');
 
-        // Assert
         $this->assertNotNull($retrievedFruit);
-        $this->assertSame('Apple', $retrievedFruit['name'], 'fruits');
-        $this->assertSame(150, $retrievedFruit['grams'], 'fruits');
+        $this->assertSame('Apple', $retrievedFruit['name']);
+        $this->assertSame(150, $retrievedFruit['grams']);
     }
 
     public function testRetrieveAllFruits(): void
     {
-        // Arrange
-        $adapter = new InMemoryStorageAdapter();
-        $storageService = new StorageService($adapter);
+        $this->storageService->saveData(['id' => 0, 'name' => 'Apple', 'grams' => 150], 'fruits');
+        $this->storageService->saveData(['id' => 1, 'name' => 'Banana', 'grams' => 200], 'fruits');
 
-        $storageService->saveData(['type' => 'fruit', 'id' => '1', 'name' => 'Apple', 'grams' => 150], 'fruits');
-        $storageService->saveData(['type' => 'fruit', 'id' => '2', 'name' => 'Banana', 'grams' => 120], 'fruits');
+        $allFruits = $this->storageService->getAllData('fruits', []);
 
-        // Act
-        $allFruits = $storageService->getAllData('fruits');
-
-        // Assert
         $this->assertCount(2, $allFruits);
-        $this->assertSame('Apple', $allFruits[0]['name'], 'fruits');
-        $this->assertSame('Banana', $allFruits[1]['name'], 'fruits');
+        $this->assertSame('Apple', $allFruits[0]['name']);
+        $this->assertSame('Banana', $allFruits[1]['name']);
     }
 
     public function testHandleNonexistentFruit(): void
     {
-        // Arrange
-        $adapter = new InMemoryStorageAdapter();
-        $storageService = new StorageService($adapter);
-
-        // Act
-        $nonexistentFruit = $storageService->findData('99', 'fruit');
-
-        // Assert
+        $nonexistentFruit = $this->storageService->findData(99, 'fruits');
         $this->assertNull($nonexistentFruit);
+    }
+
+    public function testSaveFruitWithInvalidIdType(): void
+    {
+        $fruitData = [
+            'id' => '1',
+            'name' => 'Apple',
+            'grams' => 150,
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Data must contain a valid "id" key and it must be an integer.');
+
+        $this->storageService->saveData($fruitData, 'fruits');
+    }
+
+    public function testSaveFruitWithInvalidGrams(): void
+    {
+        $fruitData = [
+            'id' => 1,
+            'name' => 'Apple',
+            'grams' => -50,
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Data must contain a valid "grams" key and it must be greater than or equal to 0.');
+
+        $this->storageService->saveData($fruitData, 'fruits');
+    }
+
+    public function testSaveFruitWithMissingGrams(): void
+    {
+        $fruitData = [
+            'id' => 1,
+            'name' => 'Apple',
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Data must contain a valid "grams" key and it must be greater than or equal to 0.');
+
+        $this->storageService->saveData($fruitData, 'fruits');
     }
 }

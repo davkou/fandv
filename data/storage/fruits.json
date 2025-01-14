@@ -1,12 +1,12 @@
 [
     {
-        "id": "7",
-        "name": "WaterMelon7",
-        "grams": 650
+        "id": 0,
+        "name": "Banana",
+        "grams": 20
     },
     {
-        "id": "8",
-        "name": "WaterMelon3",
-        "grams": 750
+        "id": 1,
+        "name": "Apple",
+        "grams": 120
     }
 ]

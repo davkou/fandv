@@ -2,20 +2,22 @@
 
 namespace App\Storage;
 
-use Symfony\Contracts\Cache\ItemInterface;
+use App\Service\Search\SearchInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 class FileStorageAdapter implements StorageAdapterInterface
 {
     private string $basePath;
 
-    public function __construct(string $basePath = '/data/storage')
-    {
+    public function __construct(
+        string $basePath = '/data/storage',
+        private SearchInterface $search
+    ) {
         $this->basePath = $basePath;
         $this->ensureBasePathExists();
     }
 
-    // S'assurer que le répertoire de base existe
+    // Ensure the base directory exists
     private function ensureBasePathExists(): void
     {
         $filesystem = new Filesystem();
@@ -24,49 +26,49 @@ class FileStorageAdapter implements StorageAdapterInterface
         }
     }
 
-    // Sauvegarder des données dans un fichier spécifique à un repository (fruits ou légumes)
-    public function save(string $id, array $data, string $repository): void
+    // Save data in a specific file for a repository (fruits or vegetables)
+    public function add(int $id, array $data, string $repository): void
     {
-        // Déterminer le chemin du fichier pour ce repository
+        // Determine the file path for this repository
         $filePath = $this->basePath . '/' . $repository . '.json';
 
-        // Charger les données existantes si le fichier existe
+        // Load existing data if the file exists
         $existingData = [];
         if (file_exists($filePath)) {
             $existingData = json_decode(file_get_contents($filePath), true);
         }
 
-        // Si l'id existe déjà, on met à jour, sinon on ajoute une nouvelle entrée dans le tableau
+        // If the ID exists, update it; otherwise, add a new entry to the array
         $updated = false;
         foreach ($existingData as &$item) {
             if ($item['id'] === $id) {
-                $item = $data; // Mettre à jour les données pour cet ID
+                $item = $data; // Update the data for this ID
                 $updated = true;
                 break;
             }
         }
 
-        // Si l'élément n'existe pas, on l'ajoute à la liste
+        // If the item doesn't exist, add it to the list
         if (!$updated) {
             $existingData[] = $data;
         }
 
-        // Sauvegarder toutes les données mises à jour dans le fichier
+        // Save all the updated data back into the file
         file_put_contents($filePath, json_encode($existingData, JSON_PRETTY_PRINT));
     }
 
-    // Récupérer une donnée par son ID depuis un repository (fruits ou légumes)
-    public function find(string $id, string $repository): ?array
+    // Retrieve data by its ID from a repository (fruits or vegetables)
+    public function get(int $id, string $repository): ?array
     {
-        // Déterminer le chemin du fichier pour ce repository
+        // Determine the file path for this repository
         $filePath = $this->basePath . '/' . $repository . '.json';
 
-        // Vérifier si le fichier existe
+        // Check if the file exists
         if (!file_exists($filePath)) {
             return null;
         }
 
-        // Charger toutes les données et rechercher l'élément correspondant à l'ID
+        // Load all the data and search for the item with the given ID
         $data = json_decode(file_get_contents($filePath), true);
         foreach ($data as $item) {
             if ($item['id'] === $id) {
@@ -77,28 +79,27 @@ class FileStorageAdapter implements StorageAdapterInterface
         return null;
     }
 
-    // Récupérer toutes les données d'un repository
-    public function findAll(string $repository): array
+    // Retrieve all data from a repository
+    public function list(string $repository, array $filters = []): array
     {
-        // Déterminer le chemin du fichier pour ce repository
+        // Determine the file path for this repository
         $filePath = $this->basePath . '/' . $repository . '.json';
 
-        // Si le fichier n'existe pas, retourner un tableau vide
+        // If the file doesn't exist, return an empty array
         if (!file_exists($filePath)) {
             return [];
         }
 
-        // Lire et retourner toutes les données du fichier
+        // Read data from the JSON file
         $data = file_get_contents($filePath);
-        return json_decode($data, true) ?? [];
-    }
+        $items = json_decode($data, true) ?? [];
 
-    // Vérifier et créer le répertoire du repository s'il n'existe pas
-    private function ensureRepositoryExists(string $repositoryPath): void
-    {
-        $filesystem = new Filesystem();
-        if (!$filesystem->exists($repositoryPath)) {
-            $filesystem->mkdir($repositoryPath);
+        // If no filters are set, return all the data
+        if (empty($filters)) {
+            return $items;
         }
+
+        // Apply the filters
+        return $this->search->search($filters, $items);
     }
 }

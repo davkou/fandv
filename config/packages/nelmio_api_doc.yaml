@@ -1,8 +1,8 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: My App
-            description: Home Test
+            title: Fruits and Vegetables
+            description: Fruits and Vegetables
             version: 1.0.0
         tags:
             - name: "Fruits"
@@ -15,20 +15,28 @@ nelmio_api_doc:
                     type: "object"
                     properties:
                         id:
-                            type: "string"
+                            type: "integer"
                         name:
                             type: "string"
                         grams:
                             type: "integer"
+                    required:
+                        - id
+                        - name
+                        - grams
                 Vegetable:
                     type: "object"
                     properties:
                         id:
-                            type: "string"
+                            type: "integer"
                         name:
                             type: "string"
                         grams:
                             type: "integer"
+                    required:
+                        - id
+                        - name
+                        - grams
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
