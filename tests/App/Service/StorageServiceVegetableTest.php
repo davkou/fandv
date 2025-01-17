@@ -100,6 +100,36 @@ class StorageServiceVegetableTest extends TestCase
         $this->storageService->saveData($vegetableData, 'vegetables');
     }
 
+    public function testSaveVegetableWithInvalidName(): void
+    {
+        $vegetableData = [
+            'type' => 'vegetable',
+            'id' => 1,
+            'name' => 5454,
+            'grams' => 10,
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Data must contain a valid "name" key and it must be a string and not blank!.');
+
+        $this->storageService->saveData($vegetableData, 'vegetables');
+    }
+
+    public function testSaveVegetableWithInvalidBlankName(): void
+    {
+        $vegetableData = [
+            'type' => 'vegetable',
+            'id' => 1,
+            'name' => '',
+            'grams' => 10,
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Data must contain a valid "name" key and it must be a string and not blank!.');
+
+        $this->storageService->saveData($vegetableData, 'vegetables');
+    }
+
     public function testSaveVegetableWithMissingGrams(): void
     {
         // Arrange :

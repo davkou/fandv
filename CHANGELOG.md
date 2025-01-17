@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Feature] 
   + This changelog.
   + A Makefile to wrap all commands (docker, setup, sh...), to build, install and run the app!
+  + Add some tests POST, name typehinting
+  + Add debug pack deps
+  + Disabled deprecated messages in tests
 - [Enhancement] Keep tracks, better developper experience, software application design
 
 ### Changed

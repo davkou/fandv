@@ -13,17 +13,17 @@ build:
 # 🏃‍♂️ Run the container interactively
 run:
 	@echo "🚀 Running the container interactively..."
-	docker run -it -w/app -v $(shell pwd):/app tturkowski/fruits-and-vegetables sh
+	docker run -it --user $(shell id -u):$(shell id -g) -w /app -v $(shell pwd):/app tturkowski/fruits-and-vegetables sh
 
 # 🛂 Run the tests inside the container
 test:
 	@echo "🧪 Running tests..."
-	docker run -it -w /app -v $(shell pwd):/app tturkowski/fruits-and-vegetables bin/phpunit
+	docker run -it --user $(shell id -u):$(shell id -g) -w /app -v $(shell pwd):/app tturkowski/fruits-and-vegetables bin/phpunit
 
 # ⌨️ Start the development server
 dev:
 	@echo "🌐 Starting the development server..."
-	docker run -it -w /app -v $(shell pwd):/app -p 8080:8080 tturkowski/fruits-and-vegetables php -S 0.0.0.0:8080 -t /app/public
+	docker run -it --user $(shell id -u):$(shell id -g) -w /app -v $(shell pwd):/app -p 8080:8080 tturkowski/fruits-and-vegetables php -S 0.0.0.0:8080 -t /app/public
 	@echo "➡️ Open http://127.0.0.1:8080 in your browser"
 
 # 🔧 Clean up Docker containers, images, and volumes

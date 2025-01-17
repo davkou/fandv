@@ -6,6 +6,7 @@ use App\Service\UnitConversionService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,7 +21,7 @@ abstract class BaseApiController extends AbstractController
     ) {
     }
 
-    protected function deserializeAndValidate(Request $request, string $class)
+    protected function deserializeAndValidate(Request $request, string $class): JsonResponse
     {
         try {
             // Deserialize the request into an object of the specified class
@@ -37,10 +38,10 @@ abstract class BaseApiController extends AbstractController
             }
 
             return $object;
-        } catch (NotNormalizableValueException $e) {
+        } catch (NotNormalizableValueException|NotEncodableValueException $e) {
             return new JsonResponse(['error' => sprintf('Invalid data format %s', $e->getMessage())], 422);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Internal server error'], 500);
+            return new JsonResponse(['error' => sprintf('Internal server error %s exception details %s', $e->getMessage(), $e::class)], 500);
         }
     }
 

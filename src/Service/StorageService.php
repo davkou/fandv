@@ -29,6 +29,11 @@ class StorageService
             throw new \InvalidArgumentException('Data must contain a valid "grams" key and it must be greater than or equal to 0.');
         }
 
+        // Check if "name" is present and is a string
+        if (empty($data['name']) || !is_string($data['name'])) {
+            throw new \InvalidArgumentException('Data must contain a valid "name" key and it must be a string and not blank!.');
+        }
+
         // If validations pass, add the data to the adapter
         $this->adapter->add($data['id'], $data, $repository);
     }

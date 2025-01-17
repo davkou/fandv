@@ -79,4 +79,24 @@ class FruitControllerTest extends WebTestCase
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals('Not found', $data['error']);
     }
+
+    public function testPostFruitWithInvalidIdType(): void
+    {
+        // Arrange
+        $payload = [
+            'id' => '2', // String ici pour tester la validation
+            'name' => 'Orange',
+            'grams' => 100
+        ];
+
+        // Act
+        $this->client->request('POST', '/api/fruits', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($payload));
+        // Décoder la réponse JSON pour travailler avec un tableau PHP
+        $responseContent = json_decode($this->client->getResponse()->getContent(), true);
+
+        // Assert
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertArrayHasKey('error', $responseContent);
+        $this->assertStringContainsString('The type of the "id" attribute for class "App\\Entity\\Fruit" must be one of "int" ("string" given).', $responseContent['error']);
+    }
 }
